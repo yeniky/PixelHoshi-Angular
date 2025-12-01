@@ -9,7 +9,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-
+/**
+ * Datos necesarios para registrar un nuevo usuario en PixelHoshi.
+ */
 interface Usuario {
   email: string;
   password: string;
@@ -37,7 +39,7 @@ export class RegistroComponent {
           [
             Validators.required,
             Validators.minLength(8),
-            // 1 mayúscula, 1 número, 1 símbolo
+            //** 1 mayúscula, 1 número, 1 símbolo
             Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/),
           ],
         ],
@@ -53,7 +55,7 @@ export class RegistroComponent {
     return this.formRegistro.controls;
   }
 
-  // Validador para que password y repetirPassword coincidan
+  //** Validador para que password y repetirPassword coincidan
   private passwordsIgualesValidator(
     group: AbstractControl
   ): ValidationErrors | null {
@@ -79,7 +81,14 @@ export class RegistroComponent {
   private guardarUsuarios(usuarios: Usuario[]) {
     localStorage.setItem('usuarios', JSON.stringify(usuarios));
   }
-
+/**
+ * Maneja el envío del formulario de registro.
+ *
+ * - Valida el formulario y que las contraseñas coincidan.
+ * - Verifica que el email no exista ya en localStorage.
+ * - Guarda el nuevo usuario en localStorage con rol "usuario".
+ * - Redirige al login y muestra un mensaje de confirmación.
+ */
   onSubmit(): void {
     this.mensaje = '';
     this.mensajeTipo = '';
@@ -96,7 +105,7 @@ export class RegistroComponent {
 
     const usuarios = this.cargarUsuarios();
 
-    // Verificar si ya existe un usuario con ese correo
+    // **Verificar si ya existe un usuario con ese correo
     if (
       usuarios.some(
         (u) => u.email.toLowerCase() === email.trim().toLowerCase()
@@ -107,7 +116,7 @@ export class RegistroComponent {
       return;
     }
 
-    // Crear nuevo usuario con rol "usuario"
+    // **Crear nuevo usuario con rol "usuario"
     const nuevo: Usuario = {
       email: email.trim(),
       password,
@@ -120,7 +129,7 @@ export class RegistroComponent {
     this.mensaje = 'Cuenta creada correctamente. Ahora puedes iniciar sesión.';
     this.mensajeTipo = 'success';
 
-    // Opcional: redirigir al login después de un momento
+    // **Opcional: redirigir al login después de un momento
     setTimeout(() => {
       this.router.navigate(['/login']);
     }, 1500);

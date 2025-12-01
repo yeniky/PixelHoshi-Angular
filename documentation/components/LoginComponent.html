@@ -280,7 +280,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/pages/login/login.component.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/pages/login/login.component.ts:29</a></div>
                             </td>
                         </tr>
 
@@ -361,14 +361,18 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/app/pages/login/login.component.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">src/app/pages/login/login.component.ts:54</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Asegura que existan cuentas de ejemplo en localStorage.</p>
+<p>Si no están creados los usuarios demo &quot;<a href="mailto:admin@pixelhoshi.com">admin@pixelhoshi.com</a>&quot; y &quot;<a href="mailto:user@pixelhoshi.com">user@pixelhoshi.com</a>&quot;,
+los agrega al arreglo de usuarios en localStorage.</p>
+</div>
 
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
@@ -398,8 +402,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">src/app/pages/login/login.component.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">src/app/pages/login/login.component.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -435,14 +439,22 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">src/app/pages/login/login.component.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">src/app/pages/login/login.component.ts:90</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Maneja el envío del formulario de inicio de sesión.</p>
+<ul>
+<li>Valida el formulario.</li>
+<li>Busca el usuario en localStorage.</li>
+<li>Si las credenciales son correctas, guarda email y rol en localStorage y redirige al catálogo.</li>
+<li>Si son incorrectas, muestra un mensaje de error.</li>
+</ul>
+</div>
 
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
@@ -477,7 +489,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/pages/login/login.component.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/pages/login/login.component.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -506,7 +518,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/pages/login/login.component.ts:43</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/pages/login/login.component.ts:45</a></div>
                                 </td>
                             </tr>
 
@@ -526,7 +538,9 @@ import {
   ReactiveFormsModule,
 } from &#x27;@angular/forms&#x27;;
 import { Router, RouterModule } from &#x27;@angular/router&#x27;;
-
+/**
+ * Representa un usuario básico de PixelHoshi almacenado en localStorage.
+ */
 interface Usuario {
   email: string;
   password: string;
@@ -560,7 +574,12 @@ export class LoginComponent implements OnInit {
   get f() {
     return this.formLogin.controls;
   }
-
+/**
+ * Asegura que existan cuentas de ejemplo en localStorage.
+ *
+ * Si no están creados los usuarios demo &quot;admin@pixelhoshi.com&quot; y &quot;user@pixelhoshi.com&quot;,
+ * los agrega al arreglo de usuarios en localStorage.
+ */
   private asegurarSeeds(): void {
     let usuarios: Usuario[] &#x3D; [];
 
@@ -589,7 +608,14 @@ export class LoginComponent implements OnInit {
       localStorage.setItem(&#x27;usuarios&#x27;, JSON.stringify(usuarios));
     }
   }
-
+/**
+ * Maneja el envío del formulario de inicio de sesión.
+ *
+ * - Valida el formulario.
+ * - Busca el usuario en localStorage.
+ * - Si las credenciales son correctas, guarda email y rol en localStorage y redirige al catálogo.
+ * - Si son incorrectas, muestra un mensaje de error.
+ */
   onSubmit(): void {
     if (this.formLogin.invalid) {
       this.formLogin.markAllAsTouched();

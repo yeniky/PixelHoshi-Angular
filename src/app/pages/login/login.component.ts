@@ -9,7 +9,9 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-
+/**
+ * Representa un usuario básico de PixelHoshi almacenado en localStorage.
+ */
 interface Usuario {
   email: string;
   password: string;
@@ -43,7 +45,12 @@ export class LoginComponent implements OnInit {
   get f() {
     return this.formLogin.controls;
   }
-
+/**
+ * Asegura que existan cuentas de ejemplo en localStorage.
+ *
+ * Si no están creados los usuarios demo "admin@pixelhoshi.com" y "user@pixelhoshi.com",
+ * los agrega al arreglo de usuarios en localStorage.
+ */
   private asegurarSeeds(): void {
     let usuarios: Usuario[] = [];
 
@@ -72,7 +79,14 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('usuarios', JSON.stringify(usuarios));
     }
   }
-
+/**
+ * Maneja el envío del formulario de inicio de sesión.
+ *
+ * - Valida el formulario.
+ * - Busca el usuario en localStorage.
+ * - Si las credenciales son correctas, guarda email y rol en localStorage y redirige al catálogo.
+ * - Si son incorrectas, muestra un mensaje de error.
+ */
   onSubmit(): void {
     if (this.formLogin.invalid) {
       this.formLogin.markAllAsTouched();

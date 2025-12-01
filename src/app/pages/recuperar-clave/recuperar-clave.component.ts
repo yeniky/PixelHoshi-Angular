@@ -39,6 +39,13 @@ export class RecuperarClaveComponent {
     return this.formRecuperar.controls;
   }
 
+  /**
+ * Simula el envío de un enlace de recuperación de contraseña.
+ *
+ * - Valida que el email tenga formato correcto.
+ * - Muestra un mensaje informando que se envió el correo.
+ * - No manda correos reales, solo actualiza la vista para efectos de demo.
+ */
   onSubmit(): void {
     if (this.formRecuperar.invalid) {
       this.formRecuperar.markAllAsTouched();

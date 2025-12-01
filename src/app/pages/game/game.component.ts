@@ -17,7 +17,9 @@ interface Juego {
   rating: number;
   imagen: string;
 }
-
+/**
+ * Reseña publicada por un usuario sobre un juego en PixelHoshi.
+ */
 interface Resena {
   id: number;
   puntaje: number;
@@ -145,8 +147,15 @@ export class GameComponent implements OnInit {
     return this.resenasVisibles.length;
   }
 
-  // ==== Acciones ====
-
+  //   Acciones  
+/**
+ * Publica una nueva reseña para el juego actual.
+ *
+ * - Requiere que el usuario haya iniciado sesión.
+ * - Agrega la reseña al arreglo de reseñas del juego.
+ * - Persiste los cambios en localStorage.
+ * - Limpia el formulario de reseña al terminar.
+ */
   publicar(): void {
     if (!this.puedeComentar) {
       alert('Debes iniciar sesión para agregar una reseña.');
@@ -175,14 +184,27 @@ export class GameComponent implements OnInit {
     this.guardarResenas();
     this.formResena.reset();
   }
-
+/**
+ * Elimina una reseña del juego actual de forma permanente.
+ *
+ * Solo debe usarse cuando el usuario conectado tiene rol "admin".
+ *
+ * @param resenas Reseña a eliminar.
+ */
   eliminarResena(id: number): void {
     if (!this.esAdmin) return;
 
     this.resenas = this.resenas.filter((r) => r.id !== id);
     this.guardarResenas();
   }
-
+/**
+ * Alterna el estado de visibilidad de una reseña.
+ *
+ * Solo debe usarse cuando el usuario conectado tiene rol "admin".
+ * Permite ocultar o volver a mostrar reseñas sin eliminarlas.
+ *
+ * @param resenas Reseña que se desea ocultar o volver a mostrar.
+ */
   toggleVisibilidad(id: number): void {
     if (!this.esAdmin) return;
 

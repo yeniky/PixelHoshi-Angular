@@ -144,6 +144,13 @@
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Datos necesarios para registrar un nuevo usuario en PixelHoshi.</p>
+
+            </p>
 
 
         <section data-compodoc="block-index">
@@ -302,7 +309,9 @@ import {
   Validators,
 } from &#x27;@angular/forms&#x27;;
 import { Router, RouterModule } from &#x27;@angular/router&#x27;;
-
+/**
+ * Datos necesarios para registrar un nuevo usuario en PixelHoshi.
+ */
 interface Usuario {
   email: string;
   password: string;
@@ -330,7 +339,7 @@ export class RegistroComponent {
           [
             Validators.required,
             Validators.minLength(8),
-            // 1 mayúscula, 1 número, 1 símbolo
+            //** 1 mayúscula, 1 número, 1 símbolo
             Validators.pattern(/^(?&#x3D;.*[A-Z])(?&#x3D;.*\d)(?&#x3D;.*[^\w\s]).+$/),
           ],
         ],
@@ -346,7 +355,7 @@ export class RegistroComponent {
     return this.formRegistro.controls;
   }
 
-  // Validador para que password y repetirPassword coincidan
+  //** Validador para que password y repetirPassword coincidan
   private passwordsIgualesValidator(
     group: AbstractControl
   ): ValidationErrors | null {
@@ -372,7 +381,14 @@ export class RegistroComponent {
   private guardarUsuarios(usuarios: Usuario[]) {
     localStorage.setItem(&#x27;usuarios&#x27;, JSON.stringify(usuarios));
   }
-
+/**
+ * Maneja el envío del formulario de registro.
+ *
+ * - Valida el formulario y que las contraseñas coincidan.
+ * - Verifica que el email no exista ya en localStorage.
+ * - Guarda el nuevo usuario en localStorage con rol &quot;usuario&quot;.
+ * - Redirige al login y muestra un mensaje de confirmación.
+ */
   onSubmit(): void {
     this.mensaje &#x3D; &#x27;&#x27;;
     this.mensajeTipo &#x3D; &#x27;&#x27;;
@@ -389,7 +405,7 @@ export class RegistroComponent {
 
     const usuarios &#x3D; this.cargarUsuarios();
 
-    // Verificar si ya existe un usuario con ese correo
+    // **Verificar si ya existe un usuario con ese correo
     if (
       usuarios.some(
         (u) &#x3D;&gt; u.email.toLowerCase() &#x3D;&#x3D;&#x3D; email.trim().toLowerCase()
@@ -400,7 +416,7 @@ export class RegistroComponent {
       return;
     }
 
-    // Crear nuevo usuario con rol &quot;usuario&quot;
+    // **Crear nuevo usuario con rol &quot;usuario&quot;
     const nuevo: Usuario &#x3D; {
       email: email.trim(),
       password,
@@ -413,7 +429,7 @@ export class RegistroComponent {
     this.mensaje &#x3D; &#x27;Cuenta creada correctamente. Ahora puedes iniciar sesión.&#x27;;
     this.mensajeTipo &#x3D; &#x27;success&#x27;;
 
-    // Opcional: redirigir al login después de un momento
+    // **Opcional: redirigir al login después de un momento
     setTimeout(() &#x3D;&gt; {
       this.router.navigate([&#x27;/login&#x27;]);
     }, 1500);

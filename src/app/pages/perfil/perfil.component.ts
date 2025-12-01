@@ -68,7 +68,15 @@ export class PerfilComponent implements OnInit {
     }
     return usuarios;
   }
-
+/**
+ * Actualiza la contraseña del usuario actual.
+ *
+ * - Valida el formulario de nueva contraseña.
+ * - Busca el usuario en localStorage y reemplaza su password.
+ * - Muestra un mensaje de éxito.
+ * - Cierra la sesión y redirige a la pantalla de login
+ *   para que el usuario vuelva a entrar con la nueva clave.
+ */
   guardar(): void {
     this.mensaje = '';
     this.mensajeTipo = '';

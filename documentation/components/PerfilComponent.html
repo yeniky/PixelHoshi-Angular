@@ -406,14 +406,23 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">src/app/pages/perfil/perfil.component.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">src/app/pages/perfil/perfil.component.ts:80</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Actualiza la contraseña del usuario actual.</p>
+<ul>
+<li>Valida el formulario de nueva contraseña.</li>
+<li>Busca el usuario en localStorage y reemplaza su password.</li>
+<li>Muestra un mensaje de éxito.</li>
+<li>Cierra la sesión y redirige a la pantalla de login
+para que el usuario vuelva a entrar con la nueva clave.</li>
+</ul>
+</div>
 
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
@@ -686,7 +695,15 @@ export class PerfilComponent implements OnInit {
     }
     return usuarios;
   }
-
+/**
+ * Actualiza la contraseña del usuario actual.
+ *
+ * - Valida el formulario de nueva contraseña.
+ * - Busca el usuario en localStorage y reemplaza su password.
+ * - Muestra un mensaje de éxito.
+ * - Cierra la sesión y redirige a la pantalla de login
+ *   para que el usuario vuelva a entrar con la nueva clave.
+ */
   guardar(): void {
     this.mensaje &#x3D; &#x27;&#x27;;
     this.mensajeTipo &#x3D; &#x27;&#x27;;

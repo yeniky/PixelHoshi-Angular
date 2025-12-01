@@ -339,14 +339,21 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/app/pages/recuperar-clave/recuperar-clave.component.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/app/pages/recuperar-clave/recuperar-clave.component.ts:49</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Simula el envío de un enlace de recuperación de contraseña.</p>
+<ul>
+<li>Valida que el email tenga formato correcto.</li>
+<li>Muestra un mensaje informando que se envió el correo.</li>
+<li>No manda correos reales, solo actualiza la vista para efectos de demo.</li>
+</ul>
+</div>
 
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
@@ -521,6 +528,13 @@ export class RecuperarClaveComponent {
     return this.formRecuperar.controls;
   }
 
+  /**
+ * Simula el envío de un enlace de recuperación de contraseña.
+ *
+ * - Valida que el email tenga formato correcto.
+ * - Muestra un mensaje informando que se envió el correo.
+ * - No manda correos reales, solo actualiza la vista para efectos de demo.
+ */
   onSubmit(): void {
     if (this.formRecuperar.invalid) {
       this.formRecuperar.markAllAsTouched();
