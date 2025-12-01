@@ -85,7 +85,7 @@ export class GameComponent implements OnInit {
   ) {
     this.formResena = this.fb.group({
       puntaje: ['', Validators.required],
-      comentario: ['', [Validators.required, Validators.minLength(5)]],
+      comentario: ['', [Validators.required, Validators.minLength(15)]],
     });
   }
 
