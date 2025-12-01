@@ -1,0 +1,54 @@
+<main class="container py-4">
+  <section class="row justify-content-center">
+    <div class="col-12 col-md-6">
+      <div class="card bg-dark text-light border-secondary shadow">
+        <div class="card-body">
+          <h1 class="h4 mb-4 text-center">Recuperar contraseña</h1>
+
+          <form [formGroup]="formRecuperar" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                formControlName="email"
+                [class.is-invalid]="
+                  f['email'].invalid && (f['email'].touched || f['email'].dirty)
+                "
+              />
+
+              <div
+                class="invalid-feedback"
+                *ngIf="f['email'].errors?.['required']"
+              >
+                El email es obligatorio.
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="f['email'].errors?.['email']"
+              >
+                Debes ingresar un email válido.
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100">
+              Enviar enlace
+            </button>
+          </form>
+
+          <!-- Mensaje de resultado -->
+          <div
+            *ngIf="mensaje"
+            class="alert mt-3"
+            [ngClass]="{
+              'alert-success': tipoMensaje === 'success',
+              'alert-danger': tipoMensaje === 'danger'
+            }"
+          >
+            {{ mensaje }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

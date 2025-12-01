@@ -1,0 +1,88 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+  <div class="container">
+    <!-- Logo + nombre -->
+    <a class="navbar-brand fw-bold" routerLink="/inicio">
+      <img
+        src="/assets/img/pixel_skull_star.svg"
+        alt="PixelHoshi"
+        width="20"
+        height="20"
+        class="me-2 align-text-top"
+      />
+      PixelHoshi
+    </a>
+
+    <!-- Botón para colapsar en móvil -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navPrincipal"
+      aria-controls="navPrincipal"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="navPrincipal">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <!-- Siempre visible -->
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/catalogo"
+            routerLinkActive="active"
+          >
+            Juegos
+          </a>
+        </li>
+
+        <!-- SOLO si NO hay sesión -->
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a
+            class="nav-link"
+            routerLink="/login"
+            routerLinkActive="active"
+          >
+            Ingresar
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a
+            class="nav-link"
+            routerLink="/registro"
+            routerLinkActive="active"
+          >
+            Registrarse
+          </a>
+        </li>
+
+        <!-- SOLO si SÍ hay sesión -->
+        <li class="nav-item" *ngIf="isLoggedIn">
+          <a
+            class="nav-link"
+            routerLink="/perfil"
+            routerLinkActive="active"
+          >
+            Perfil
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isLoggedIn">
+  <a
+    href="#"
+    class="nav-link"
+    (click)="logout(); $event.preventDefault()"
+  >
+    Salir
+  </a>
+</li>
+
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>

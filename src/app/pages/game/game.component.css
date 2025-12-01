@@ -1,0 +1,26 @@
+.game-header {
+  background: var(--card);
+  border: 1px solid var(--borde);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.game-cover {
+  width: 220px;
+  object-fit: cover;
+}
+
+.game-header .card-body {
+  color: var(--txt);
+}
+
+.resenas-card {
+  background: var(--card);
+  border: 1px solid var(--borde);
+  border-radius: 1rem;
+}
+
+.rating-label,
+.rating-value {
+  color: var(--txt);
+}
