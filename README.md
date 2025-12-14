@@ -1,59 +1,46 @@
-# PixelHoshi
+##
+## PixelHoshi - Sumativa 3 (Desarrollo Fullstack II)
+##
+## Descripción
+Aplicación Angular enfocada en reseñas/comentarios de videojuegos llamada PixelHoshi.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.1.
+## Requerimientos segun pauta de evaluación
+- App desarrollada en Angular.
+- Consumo de archivos JSON desde un “backend” estático GitHub Pages y visualización en el FrontEnd.
+- Contiene operaciones CRUD:
+  - GET: desde GitHub Pages.
+  - POST / PUT / DELETE: simulados en el frontend usando localStorage.
+- Docker: build y ejecución de la aplicación en contenedor.
+- Documentación automática: Compodoc.
 
-## Development server
+## JSON (backend estático)
+Reseñas (GET):
+https://yeniky.github.io/pixelhoshi-api/resenas.json
 
-To start a local development server, run:
+## Ejecutar en local (desarrollo)
+- Instalar dependencias:
+  npm install
+- Ejecutar:
+  ng serve -o
+- URL:
+  http://localhost:4200
 
-```bash
-ng serve
-```
+## Docker (ejecución en contenedor)
+- Build:
+  docker build -t pixelhoshi .
+- Run:
+  docker run --rm -p 8080:80 pixelhoshi
+- URL:
+  http://localhost:8080
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Documentación automática (Compodoc)
+- Generar:
+  npm run compodoc
+- Abrir:
+  documentation/index.html
+- npm run compodoc:serve
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Notas de funcionamiento
+- Para forzar la carga desde el JSON remoto, eliminar la key de localStorage del juego correspondiente:
+  resenas_game_1, resenas_game_2, etc.
+- En Docker (localhost:8080) la sesión/almacenamiento puede solicitar login nuevamente por ser un origen distinto a localhost:4200.
