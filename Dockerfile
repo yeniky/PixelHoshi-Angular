@@ -16,8 +16,7 @@ FROM nginx:alpine
 # Config SPA (Angular routing)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copia el build (Angular 17+ suele dejarlo en dist/<proyecto>/browser)
-# Esto es robusto: copia el "browser" si existe, si no copia lo que haya.
+# Copia el build 
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /app/dist /tmp/dist
 RUN set -eux; \

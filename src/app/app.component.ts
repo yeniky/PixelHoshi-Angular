@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, CommonModule],   // aquí va CommonModule para *ngIf
+  imports: [RouterModule, CommonModule],   // aquí va el CommonModule para *ngIf
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
