@@ -71,6 +71,22 @@ export class GameComponent implements OnInit {
       rating: 4.8,
       imagen: '/assets/img/Spyro.jpg',
     },
+    {
+      id: 5,
+      titulo: 'Clair Obscur: Expedition 33',
+      genero: 'RPG, Aventura',
+      anio: '2025',
+      imagen: 'assets/img/33.jpg',
+      rating: 5.0,
+    },
+     {
+      id: 6,
+      titulo: 'Donkey Kong Bananza',
+      genero: 'Aventura',
+      anio: '2025',
+      imagen: 'assets/img/bananza.jpg',
+      rating: 4.7,
+    },
   ];
 
   juego!: Juego;
