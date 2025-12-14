@@ -140,7 +140,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/pages/login/login.component.ts</code>
+            <code>src/app/pages/registro/registro.component.ts</code>
         </p>
 
 
@@ -148,7 +148,7 @@
                 <h3>Description</h3>
             </p>
             <p class="comment">
-                <p>Representa un usuario básico de PixelHoshi almacenado en localStorage.</p>
+                <p>Datos necesarios para registrar un nuevo usuario en PixelHoshi.</p>
 
             </p>
 
@@ -299,16 +299,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonModule } from &#x27;@angular/common&#x27;;
-import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { Component } from &#x27;@angular/core&#x27;;
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
-  Validators,
   ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
 } from &#x27;@angular/forms&#x27;;
 import { Router, RouterModule } from &#x27;@angular/router&#x27;;
 /**
- * Representa un usuario básico de PixelHoshi almacenado en localStorage.
+ * Datos necesarios para registrar un nuevo usuario en PixelHoshi.
  */
 interface Usuario {
   email: string;
@@ -317,41 +319,55 @@ interface Usuario {
 }
 
 @Component({
-  selector: &#x27;app-login&#x27;,
+  selector: &#x27;app-registro&#x27;,
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  templateUrl: &#x27;./login.component.html&#x27;,
-  styleUrl: &#x27;./login.component.css&#x27;,
+  templateUrl: &#x27;./registro.component.html&#x27;,
+  styleUrl: &#x27;./registro.component.css&#x27;,
 })
-export class LoginComponent implements OnInit {
-  formLogin: FormGroup;
+export class RegistroComponent {
+  formRegistro: FormGroup;
+  mensaje &#x3D; &#x27;&#x27;;
+  mensajeTipo: &#x27;success&#x27; | &#x27;danger&#x27; | &#x27;&#x27; &#x3D; &#x27;&#x27;;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router
-  ) {
-    this.formLogin &#x3D; this.fb.group({
-      email: [&#x27;&#x27;, [Validators.required, Validators.email]],
-      password: [&#x27;&#x27;, [Validators.required, Validators.minLength(8)]],
-    });
-  }
-
-  ngOnInit(): void {
-    this.asegurarSeeds();
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.formRegistro &#x3D; this.fb.group(
+      {
+        email: [&#x27;&#x27;, [Validators.required, Validators.email]],
+        password: [
+          &#x27;&#x27;,
+          [
+            Validators.required,
+            Validators.minLength(8),
+            //** 1 mayúscula, 1 número, 1 símbolo
+            Validators.pattern(/^(?&#x3D;.*[A-Z])(?&#x3D;.*\d)(?&#x3D;.*[^\w\s]).+$/),
+          ],
+        ],
+        repetirPassword: [&#x27;&#x27;, [Validators.required]],
+      },
+      {
+        validators: [this.passwordsIgualesValidator],
+      }
+    );
   }
 
   get f() {
-    return this.formLogin.controls;
+    return this.formRegistro.controls;
   }
-/**
- * Asegura que existan cuentas de ejemplo en localStorage.
- *
- * Si no están creados los usuarios demo &quot;admin@pixelhoshi.com&quot; y &quot;user@pixelhoshi.com&quot;,
- * los agrega al arreglo de usuarios en localStorage.
- */
-  private asegurarSeeds(): void {
-    let usuarios: Usuario[] &#x3D; [];
 
+  //** Validador para que password y repetirPassword coincidan
+  private passwordsIgualesValidator(
+    group: AbstractControl
+  ): ValidationErrors | null {
+    const pass &#x3D; group.get(&#x27;password&#x27;)?.value;
+    const rep &#x3D; group.get(&#x27;repetirPassword&#x27;)?.value;
+
+    if (!pass || !rep) return null;
+    return pass &#x3D;&#x3D;&#x3D; rep ? null : { noCoincide: true };
+  }
+
+  private cargarUsuarios(): Usuario[] {
+    let usuarios: Usuario[] &#x3D; [];
     try {
       const raw &#x3D; localStorage.getItem(&#x27;usuarios&#x27;);
       usuarios &#x3D; raw ? JSON.parse(raw) : [];
@@ -359,64 +375,64 @@ export class LoginComponent implements OnInit {
     } catch {
       usuarios &#x3D; [];
     }
+    return usuarios;
+  }
 
-    const seeds: Usuario[] &#x3D; [
-      { email: &#x27;admin@pixelhoshi.com&#x27;, password: &#x27;Admin*123&#x27;, rol: &#x27;admin&#x27; },
-      { email: &#x27;user@pixelhoshi.com&#x27;, password: &#x27;User*1234&#x27;, rol: &#x27;usuario&#x27; },
-    ];
-
-    let cambio &#x3D; false;
-    seeds.forEach((s) &#x3D;&gt; {
-      if (!usuarios.some((u) &#x3D;&gt; u.email.toLowerCase() &#x3D;&#x3D;&#x3D; s.email.toLowerCase())) {
-        usuarios.push(s);
-        cambio &#x3D; true;
-      }
-    });
-
-    if (cambio) {
-      localStorage.setItem(&#x27;usuarios&#x27;, JSON.stringify(usuarios));
-    }
+  private guardarUsuarios(usuarios: Usuario[]) {
+    localStorage.setItem(&#x27;usuarios&#x27;, JSON.stringify(usuarios));
   }
 /**
- * Maneja el envío del formulario de inicio de sesión.
+ * Maneja el envío del formulario de registro.
  *
- * - Valida el formulario.
- * - Busca el usuario en localStorage.
- * - Si las credenciales son correctas, guarda email y rol en localStorage y redirige al catálogo.
- * - Si son incorrectas, muestra un mensaje de error.
+ * - Valida el formulario y que las contraseñas coincidan.
+ * - Verifica que el email no exista ya en localStorage.
+ * - Guarda el nuevo usuario en localStorage con rol &quot;usuario&quot;.
+ * - Redirige al login y muestra un mensaje de confirmación.
  */
   onSubmit(): void {
-    if (this.formLogin.invalid) {
-      this.formLogin.markAllAsTouched();
+    this.mensaje &#x3D; &#x27;&#x27;;
+    this.mensajeTipo &#x3D; &#x27;&#x27;;
+
+    if (this.formRegistro.invalid) {
+      this.formRegistro.markAllAsTouched();
       return;
     }
 
-    const { email, password } &#x3D; this.formLogin.value as {
+    const { email, password } &#x3D; this.formRegistro.value as {
       email: string;
       password: string;
     };
 
-    let usuarios: Usuario[] &#x3D; [];
-    try {
-      const raw &#x3D; localStorage.getItem(&#x27;usuarios&#x27;);
-      usuarios &#x3D; raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(usuarios)) usuarios &#x3D; [];
-    } catch {
-      usuarios &#x3D; [];
+    const usuarios &#x3D; this.cargarUsuarios();
+
+    // **Verificar si ya existe un usuario con ese correo
+    if (
+      usuarios.some(
+        (u) &#x3D;&gt; u.email.toLowerCase() &#x3D;&#x3D;&#x3D; email.trim().toLowerCase()
+      )
+    ) {
+      this.mensaje &#x3D; &#x27;Ya existe una cuenta con ese correo.&#x27;;
+      this.mensajeTipo &#x3D; &#x27;danger&#x27;;
+      return;
     }
 
-    const u &#x3D; usuarios.find(
-      (x) &#x3D;&gt; x.email.toLowerCase() &#x3D;&#x3D;&#x3D; email.toLowerCase()
-    );
+    // **Crear nuevo usuario con rol &quot;usuario&quot;
+    const nuevo: Usuario &#x3D; {
+      email: email.trim(),
+      password,
+      rol: &#x27;usuario&#x27;,
+    };
 
-    if (u &amp;&amp; u.password &#x3D;&#x3D;&#x3D; password) {
-      localStorage.setItem(&#x27;usuarioActual&#x27;, u.email);
-      localStorage.setItem(&#x27;rolActual&#x27;, u.rol);
-      alert(&#x27;Ingreso correcto&#x27;);
-      this.router.navigate([&#x27;/catalogo&#x27;]);
-    } else {
-      alert(&#x27;Credenciales incorrectas&#x27;);
-    }
+    usuarios.push(nuevo);
+    this.guardarUsuarios(usuarios);
+
+    this.mensaje &#x3D; &#x27;Cuenta creada correctamente. Ahora puedes iniciar sesión.&#x27;;
+    this.mensajeTipo &#x3D; &#x27;success&#x27;;
+
+    // **Opcional: redirigir al login después de un momento
+    setTimeout(() &#x3D;&gt; {
+      this.router.navigate([&#x27;/login&#x27;]);
+    }, 1500);
   }
 }
 </code></pre>

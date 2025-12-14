@@ -2,6 +2,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ResenasApiService, ResenaApi } from '../../services/resenas-api.service';
+
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -82,14 +84,16 @@ export class GameComponent implements OnInit {
   emailActual = '';
 
   constructor(
-    private route: ActivatedRoute,
-    private fb: FormBuilder
-  ) {
-    this.formResena = this.fb.group({
-      puntaje: ['', Validators.required],
-      comentario: ['', [Validators.required, Validators.minLength(15)]],
-    });
-  }
+  private route: ActivatedRoute,
+  private resenasApi: ResenasApiService,
+  private fb: FormBuilder
+) {
+  this.formResena = this.fb.group({
+    puntaje: ['', Validators.required],
+    comentario: ['', [Validators.required, Validators.minLength(15)]],
+  });
+}
+
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.queryParamMap.get('id') ?? '1');
@@ -117,22 +121,51 @@ export class GameComponent implements OnInit {
   }
 
   private cargarResenas(): void {
-    try {
-      const raw = localStorage.getItem(this.storageKey());
-      const arr = raw ? JSON.parse(raw) : [];
+  let arr: any[] = [];
 
-      // normalizamos para asegurar que siempre encuentre "visible"
-      this.resenas = (Array.isArray(arr) ? arr : []).map((r: any) => ({
+  try {
+    const raw = localStorage.getItem(this.storageKey());
+    arr = raw ? JSON.parse(raw) : [];
+  } catch {
+    arr = [];
+  }
+
+  // Si hay datos locales, usa eso y no golpea el JSON remoto
+  if (Array.isArray(arr) && arr.length > 0) {
+    this.resenas = arr.map((r: any) => ({
+      id: r.id,
+      puntaje: r.puntaje,
+      comentario: r.comentario,
+      email: r.email,
+      visible: r.visible !== false,
+    }));
+    return;
+  }
+
+  // Si NO hay datos locales, trae del "backend" (GitHub Pages) y siembra localStorage
+  this.resenasApi.getResenas().subscribe({
+    next: (data: ResenaApi[]) => {
+      const filtradas = (Array.isArray(data) ? data : []).filter(
+        (r) => Number(r.gameId) === this.juego.id
+      );
+
+      this.resenas = filtradas.map((r) => ({
         id: r.id,
         puntaje: r.puntaje,
         comentario: r.comentario,
         email: r.email,
-        visible: r.visible !== false, // por defecto true
+        visible: r.visible !== false,
       }));
-    } catch {
+
+      this.guardarResenas();
+    },
+    error: (err) => {
+      console.error('Error cargando JSON remoto:', err);
       this.resenas = [];
-    }
-  }
+    },
+  });
+}
+
 
   private guardarResenas(): void {
     localStorage.setItem(this.storageKey(), JSON.stringify(this.resenas));
