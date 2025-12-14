@@ -44,3 +44,6 @@ https://yeniky.github.io/pixelhoshi-api/resenas.json
 - Para forzar la carga desde el JSON remoto, eliminar la key de localStorage del juego correspondiente:
   resenas_game_1, resenas_game_2, etc.
 - En Docker (localhost:8080) la sesión/almacenamiento puede solicitar login nuevamente por ser un origen distinto a localhost:4200.
+
+## TRELLO
+https://trello.com/b/flOhme3D/sumativa-3-semana-8-fullstask-ii
