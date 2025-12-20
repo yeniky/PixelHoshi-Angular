@@ -411,6 +411,8 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonModule } from &#x27;@angular/common&#x27;;
 import { Component, OnInit } from &#x27;@angular/core&#x27;;
 import { ActivatedRoute } from &#x27;@angular/router&#x27;;
+import { ResenasApiService, ResenaApi } from &#x27;../../services/resenas-api.service&#x27;;
+
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -478,6 +480,22 @@ export class GameComponent implements OnInit {
       rating: 4.8,
       imagen: &#x27;/assets/img/Spyro.jpg&#x27;,
     },
+    {
+      id: 5,
+      titulo: &#x27;Clair Obscur: Expedition 33&#x27;,
+      genero: &#x27;RPG, Aventura&#x27;,
+      anio: &#x27;2025&#x27;,
+      imagen: &#x27;assets/img/33.jpg&#x27;,
+      rating: 5.0,
+    },
+     {
+      id: 6,
+      titulo: &#x27;Donkey Kong Bananza&#x27;,
+      genero: &#x27;Aventura&#x27;,
+      anio: &#x27;2025&#x27;,
+      imagen: &#x27;assets/img/bananza.jpg&#x27;,
+      rating: 4.7,
+    },
   ];
 
   juego!: Juego;
@@ -491,14 +509,16 @@ export class GameComponent implements OnInit {
   emailActual &#x3D; &#x27;&#x27;;
 
   constructor(
-    private route: ActivatedRoute,
-    private fb: FormBuilder
-  ) {
-    this.formResena &#x3D; this.fb.group({
-      puntaje: [&#x27;&#x27;, Validators.required],
-      comentario: [&#x27;&#x27;, [Validators.required, Validators.minLength(15)]],
-    });
-  }
+  private route: ActivatedRoute,
+  private resenasApi: ResenasApiService,
+  private fb: FormBuilder
+) {
+  this.formResena &#x3D; this.fb.group({
+    puntaje: [&#x27;&#x27;, Validators.required],
+    comentario: [&#x27;&#x27;, [Validators.required, Validators.minLength(15)]],
+  });
+}
+
 
   ngOnInit(): void {
     const id &#x3D; Number(this.route.snapshot.queryParamMap.get(&#x27;id&#x27;) ?? &#x27;1&#x27;);
@@ -526,22 +546,51 @@ export class GameComponent implements OnInit {
   }
 
   private cargarResenas(): void {
-    try {
-      const raw &#x3D; localStorage.getItem(this.storageKey());
-      const arr &#x3D; raw ? JSON.parse(raw) : [];
+  let arr: any[] &#x3D; [];
 
-      // normalizamos para asegurar que siempre encuentre &quot;visible&quot;
-      this.resenas &#x3D; (Array.isArray(arr) ? arr : []).map((r: any) &#x3D;&gt; ({
+  try {
+    const raw &#x3D; localStorage.getItem(this.storageKey());
+    arr &#x3D; raw ? JSON.parse(raw) : [];
+  } catch {
+    arr &#x3D; [];
+  }
+
+  // Si hay datos locales, usa eso y no golpea el JSON remoto
+  if (Array.isArray(arr) &amp;&amp; arr.length &gt; 0) {
+    this.resenas &#x3D; arr.map((r: any) &#x3D;&gt; ({
+      id: r.id,
+      puntaje: r.puntaje,
+      comentario: r.comentario,
+      email: r.email,
+      visible: r.visible !&#x3D;&#x3D; false,
+    }));
+    return;
+  }
+
+  // Si NO hay datos locales, trae del &quot;backend&quot; (GitHub Pages) y siembra localStorage
+  this.resenasApi.getResenas().subscribe({
+    next: (data: ResenaApi[]) &#x3D;&gt; {
+      const filtradas &#x3D; (Array.isArray(data) ? data : []).filter(
+        (r) &#x3D;&gt; Number(r.gameId) &#x3D;&#x3D;&#x3D; this.juego.id
+      );
+
+      this.resenas &#x3D; filtradas.map((r) &#x3D;&gt; ({
         id: r.id,
         puntaje: r.puntaje,
         comentario: r.comentario,
         email: r.email,
-        visible: r.visible !&#x3D;&#x3D; false, // por defecto true
+        visible: r.visible !&#x3D;&#x3D; false,
       }));
-    } catch {
+
+      this.guardarResenas();
+    },
+    error: (err) &#x3D;&gt; {
+      console.error(&#x27;Error cargando JSON remoto:&#x27;, err);
       this.resenas &#x3D; [];
-    }
-  }
+    },
+  });
+}
+
 
   private guardarResenas(): void {
     localStorage.setItem(this.storageKey(), JSON.stringify(this.resenas));

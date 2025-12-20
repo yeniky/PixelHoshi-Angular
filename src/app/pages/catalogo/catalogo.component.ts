@@ -54,6 +54,22 @@ export class CatalogoComponent {
       portada: 'assets/img/Spyro.jpg',
       puntaje: 4.8,
     },
+    {
+      id: 5,
+      nombre: 'Clair Obscur: Expedition 33',
+      genero: 'RPG, Aventura',
+      anio: 2025,
+      portada: 'assets/img/33.jpg',
+      puntaje: 5.0,
+    },
+     {
+      id: 6,
+      nombre: 'Donkey Kong Bananza',
+      genero: 'Aventura',
+      anio: 2025,
+      portada: 'assets/img/bananza.jpg',
+      puntaje: 4.7,
+    },
   ];
 
   getEstrellas(puntaje: number): string {

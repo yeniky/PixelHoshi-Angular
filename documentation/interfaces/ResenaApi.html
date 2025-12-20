@@ -116,7 +116,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  Resena</li>
+  ResenaApi</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -140,17 +140,10 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/pages/game/game.component.ts</code>
+            <code>src/app/services/resenas-api.service.ts</code>
         </p>
 
 
-            <p class="comment">
-                <h3>Description</h3>
-            </p>
-            <p class="comment">
-                <p>Reseña publicada por un usuario sobre un juego en PixelHoshi.</p>
-
-            </p>
 
 
         <section data-compodoc="block-index">
@@ -175,6 +168,12 @@
                                         <a href="#email" 
 >
                                             email
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#gameId" 
+>
+                                            gameId
                                         </a>
                                 </li>
                                 <li>
@@ -262,6 +261,39 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="gameId"></a>
+                                        <span class="name "><b>gameId</b>
+                                            <a href="#gameId">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>gameId:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
 
                                         </td>
                                     </tr>
@@ -376,269 +408,27 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonModule } from &#x27;@angular/common&#x27;;
-import { Component, OnInit } from &#x27;@angular/core&#x27;;
-import { ActivatedRoute } from &#x27;@angular/router&#x27;;
-import { ResenasApiService, ResenaApi } from &#x27;../../services/resenas-api.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
+import { HttpClient } from &#x27;@angular/common/http&#x27;;
+import { Observable } from &#x27;rxjs&#x27;;
 
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from &#x27;@angular/forms&#x27;;
-
-interface Juego {
+export interface ResenaApi {
   id: number;
-  titulo: string;
-  genero: string;
-  anio: string;
-  rating: number;
-  imagen: string;
-}
-/**
- * Reseña publicada por un usuario sobre un juego en PixelHoshi.
- */
-interface Resena {
-  id: number;
+  gameId: number;
   puntaje: number;
   comentario: string;
   email: string;
   visible: boolean;
 }
 
-@Component({
-  selector: &#x27;app-game&#x27;,
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: &#x27;./game.component.html&#x27;,
-  styleUrl: &#x27;./game.component.css&#x27;,
-})
-export class GameComponent implements OnInit {
-  juegos: Juego[] &#x3D; [
-    {
-      id: 1,
-      titulo: &#x27;Kena Bridge Of Spirits&#x27;,
-      genero: &#x27;Aventura&#x27;,
-      anio: &#x27;2021&#x27;,
-      rating: 4.7,
-      imagen: &#x27;/assets/img/Kena.jpg&#x27;,
-    },
-    {
-      id: 2,
-      titulo: &#x27;Final Fantasy XIV: Dawntrail&#x27;,
-      genero: &#x27;MMORPG&#x27;,
-      anio: &#x27;2013&#x27;,
-      rating: 4.6,
-      imagen: &#x27;/assets/img/Final_fantasy_xiv.jpg&#x27;,
-    },
-    {
-      id: 3,
-      titulo: &#x27;Uncharted: The Nathan Drake Collection&#x27;,
-      genero: &#x27;Aventura&#x27;,
-      anio: &#x27;2015&#x27;,
-      rating: 3.9,
-      imagen: &#x27;/assets/img/uncharted.jpg&#x27;,
-    },
-    {
-      id: 4,
-      titulo: &#x27;Spyro Reignited Trilogy&#x27;,
-      genero: &#x27;Aventura&#x27;,
-      anio: &#x27;2018&#x27;,
-      rating: 4.8,
-      imagen: &#x27;/assets/img/Spyro.jpg&#x27;,
-    },
-    {
-      id: 5,
-      titulo: &#x27;Clair Obscur: Expedition 33&#x27;,
-      genero: &#x27;RPG, Aventura&#x27;,
-      anio: &#x27;2025&#x27;,
-      imagen: &#x27;assets/img/33.jpg&#x27;,
-      rating: 5.0,
-    },
-     {
-      id: 6,
-      titulo: &#x27;Donkey Kong Bananza&#x27;,
-      genero: &#x27;Aventura&#x27;,
-      anio: &#x27;2025&#x27;,
-      imagen: &#x27;assets/img/bananza.jpg&#x27;,
-      rating: 4.7,
-    },
-  ];
+@Injectable({ providedIn: &#x27;root&#x27; })
+export class ResenasApiService {
+  private url &#x3D; &#x27;https://yeniky.github.io/pixelhoshi-api/resenas.json&#x27;;
 
-  juego!: Juego;
-  resenas: Resena[] &#x3D; [];
-  formResena: FormGroup;
-  opcionesPuntaje &#x3D; [1, 2, 3, 4, 5];
+  constructor(private http: HttpClient) {}
 
-  // info de sesión / permisos
-  puedeComentar &#x3D; false;
-  esAdmin &#x3D; false;
-  emailActual &#x3D; &#x27;&#x27;;
-
-  constructor(
-  private route: ActivatedRoute,
-  private resenasApi: ResenasApiService,
-  private fb: FormBuilder
-) {
-  this.formResena &#x3D; this.fb.group({
-    puntaje: [&#x27;&#x27;, Validators.required],
-    comentario: [&#x27;&#x27;, [Validators.required, Validators.minLength(15)]],
-  });
-}
-
-
-  ngOnInit(): void {
-    const id &#x3D; Number(this.route.snapshot.queryParamMap.get(&#x27;id&#x27;) ?? &#x27;1&#x27;);
-    this.juego &#x3D; this.juegos.find((j) &#x3D;&gt; j.id &#x3D;&#x3D;&#x3D; id) ?? this.juegos[0];
-
-    this.inicializarUsuario();
-    this.cargarResenas();
-  }
-
-  // &#x3D;&#x3D;&#x3D;&#x3D; Sesión / roles &#x3D;&#x3D;&#x3D;&#x3D;
-
-  private inicializarUsuario(): void {
-    const email &#x3D; localStorage.getItem(&#x27;usuarioActual&#x27;);
-    const rol &#x3D; localStorage.getItem(&#x27;rolActual&#x27;);
-
-    this.puedeComentar &#x3D; !!email;
-    this.emailActual &#x3D; email ?? &#x27;&#x27;;
-    this.esAdmin &#x3D; rol &#x3D;&#x3D;&#x3D; &#x27;admin&#x27;;
-  }
-
-  // &#x3D;&#x3D;&#x3D;&#x3D; LocalStorage reseñas &#x3D;&#x3D;&#x3D;&#x3D;
-
-  private storageKey(): string {
-    return &#x60;resenas_game_${this.juego.id}&#x60;;
-  }
-
-  private cargarResenas(): void {
-  let arr: any[] &#x3D; [];
-
-  try {
-    const raw &#x3D; localStorage.getItem(this.storageKey());
-    arr &#x3D; raw ? JSON.parse(raw) : [];
-  } catch {
-    arr &#x3D; [];
-  }
-
-  // Si hay datos locales, usa eso y no golpea el JSON remoto
-  if (Array.isArray(arr) &amp;&amp; arr.length &gt; 0) {
-    this.resenas &#x3D; arr.map((r: any) &#x3D;&gt; ({
-      id: r.id,
-      puntaje: r.puntaje,
-      comentario: r.comentario,
-      email: r.email,
-      visible: r.visible !&#x3D;&#x3D; false,
-    }));
-    return;
-  }
-
-  // Si NO hay datos locales, trae del &quot;backend&quot; (GitHub Pages) y siembra localStorage
-  this.resenasApi.getResenas().subscribe({
-    next: (data: ResenaApi[]) &#x3D;&gt; {
-      const filtradas &#x3D; (Array.isArray(data) ? data : []).filter(
-        (r) &#x3D;&gt; Number(r.gameId) &#x3D;&#x3D;&#x3D; this.juego.id
-      );
-
-      this.resenas &#x3D; filtradas.map((r) &#x3D;&gt; ({
-        id: r.id,
-        puntaje: r.puntaje,
-        comentario: r.comentario,
-        email: r.email,
-        visible: r.visible !&#x3D;&#x3D; false,
-      }));
-
-      this.guardarResenas();
-    },
-    error: (err) &#x3D;&gt; {
-      console.error(&#x27;Error cargando JSON remoto:&#x27;, err);
-      this.resenas &#x3D; [];
-    },
-  });
-}
-
-
-  private guardarResenas(): void {
-    localStorage.setItem(this.storageKey(), JSON.stringify(this.resenas));
-  }
-
-  // &#x3D;&#x3D;&#x3D; helpers para el template &#x3D;&#x3D;&#x3D;
-  get resenasVisibles(): Resena[] {
-    return this.resenas.filter((r) &#x3D;&gt; r.visible);
-  }
-
-  get cantidadResenasVisibles(): number {
-    return this.resenasVisibles.length;
-  }
-
-  //   Acciones  
-/**
- * Publica una nueva reseña para el juego actual.
- *
- * - Requiere que el usuario haya iniciado sesión.
- * - Agrega la reseña al arreglo de reseñas del juego.
- * - Persiste los cambios en localStorage.
- * - Limpia el formulario de reseña al terminar.
- */
-  publicar(): void {
-    if (!this.puedeComentar) {
-      alert(&#x27;Debes iniciar sesión para agregar una reseña.&#x27;);
-      return;
-    }
-
-    if (this.formResena.invalid) {
-      this.formResena.markAllAsTouched();
-      return;
-    }
-
-    const valores &#x3D; this.formResena.value as {
-      puntaje: number | string;
-      comentario: string;
-    };
-
-    const nueva: Resena &#x3D; {
-      id: Date.now(),
-      puntaje: Number(valores.puntaje),
-      comentario: valores.comentario,
-      email: this.emailActual || &#x27;anonimo@pixelhoshi.com&#x27;,
-      visible: true, // nueva reseña siempre visible
-    };
-
-    this.resenas.push(nueva);
-    this.guardarResenas();
-    this.formResena.reset();
-  }
-/**
- * Elimina una reseña del juego actual de forma permanente.
- *
- * Solo debe usarse cuando el usuario conectado tiene rol &quot;admin&quot;.
- *
- * @param resenas Reseña a eliminar.
- */
-  eliminarResena(id: number): void {
-    if (!this.esAdmin) return;
-
-    this.resenas &#x3D; this.resenas.filter((r) &#x3D;&gt; r.id !&#x3D;&#x3D; id);
-    this.guardarResenas();
-  }
-/**
- * Alterna el estado de visibilidad de una reseña.
- *
- * Solo debe usarse cuando el usuario conectado tiene rol &quot;admin&quot;.
- * Permite ocultar o volver a mostrar reseñas sin eliminarlas.
- *
- * @param resenas Reseña que se desea ocultar o volver a mostrar.
- */
-  toggleVisibilidad(id: number): void {
-    if (!this.esAdmin) return;
-
-    const r &#x3D; this.resenas.find((x) &#x3D;&gt; x.id &#x3D;&#x3D;&#x3D; id);
-    if (r) {
-      r.visible &#x3D; !r.visible;
-      this.guardarResenas();
-    }
+  getResenas(): Observable&lt;ResenaApi[]&gt; {
+    return this.http.get&lt;ResenaApi[]&gt;(this.url);
   }
 }
 </code></pre>
@@ -678,7 +468,7 @@ export class GameComponent implements OnInit {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'Resena.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ResenaApi.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

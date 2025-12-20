@@ -427,7 +427,7 @@ import { CommonModule } from &#x27;@angular/common&#x27;;
 @Component({
   selector: &#x27;app-root&#x27;,
   standalone: true,
-  imports: [RouterModule, CommonModule],   // 👈 aquí va CommonModule para *ngIf
+  imports: [RouterModule, CommonModule],   // aquí va el CommonModule para *ngIf
   templateUrl: &#x27;./app.component.html&#x27;,
   styleUrl: &#x27;./app.component.css&#x27;,
 })
@@ -436,7 +436,7 @@ export class AppComponent {
 
   constructor(private router: Router) {}
 
-  // 👇 esto dice si hay usuario logeado o no
+  // Esto indica si hay usuario logeado o no
   get isLoggedIn(): boolean {
     return !!localStorage.getItem(&#x27;usuarioActual&#x27;);
   }
