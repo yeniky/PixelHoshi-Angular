@@ -140,10 +140,17 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/pages/perfil/perfil.component.ts</code>
+            <code>src/app/pages/login/login.component.ts</code>
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Representa un usuario básico de PixelHoshi almacenado en localStorage.</p>
+
+            </p>
 
 
         <section data-compodoc="block-index">
@@ -296,11 +303,13 @@ import { Component, OnInit } from &#x27;@angular/core&#x27;;
 import {
   FormBuilder,
   FormGroup,
-  ReactiveFormsModule,
   Validators,
+  ReactiveFormsModule,
 } from &#x27;@angular/forms&#x27;;
-import { Router } from &#x27;@angular/router&#x27;;
-
+import { Router, RouterModule } from &#x27;@angular/router&#x27;;
+/**
+ * Representa un usuario básico de PixelHoshi almacenado en localStorage.
+ */
 interface Usuario {
   email: string;
   password: string;
@@ -308,47 +317,85 @@ interface Usuario {
 }
 
 @Component({
-  selector: &#x27;app-perfil&#x27;,
+  selector: &#x27;app-login&#x27;,
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: &#x27;./perfil.component.html&#x27;,
-  styleUrl: &#x27;./perfil.component.css&#x27;,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  templateUrl: &#x27;./login.component.html&#x27;,
+  styleUrl: &#x27;./login.component.css&#x27;,
 })
-export class PerfilComponent implements OnInit {
-  // correo del usuario logeado
-  usuarioActual: string | null &#x3D; null;
+export class LoginComponent implements OnInit {
+  formLogin: FormGroup;
 
-  // formulario para cambiar password
-  formPassword: FormGroup;
-
-  // mensajes para feedback
-  mensaje &#x3D; &#x27;&#x27;;
-  mensajeTipo: &#x27;success&#x27; | &#x27;danger&#x27; | &#x27;&#x27; &#x3D; &#x27;&#x27;;
-
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.formPassword &#x3D; this.fb.group({
-      nuevaPassword: [
-        &#x27;&#x27;,
-        [
-          Validators.required,
-          Validators.minLength(8),
-          // 1 mayúscula, 1 número, 1 símbolo
-          Validators.pattern(/^(?&#x3D;.*[A-Z])(?&#x3D;.*\d)(?&#x3D;.*[^\w\s]).+$/),
-        ],
-      ],
+  constructor(
+    private fb: FormBuilder,
+    private router: Router
+  ) {
+    this.formLogin &#x3D; this.fb.group({
+      email: [&#x27;&#x27;, [Validators.required, Validators.email]],
+      password: [&#x27;&#x27;, [Validators.required, Validators.minLength(8)]],
     });
   }
 
   ngOnInit(): void {
-    // lee el usuario que dejó el login en localStorage
-    this.usuarioActual &#x3D; localStorage.getItem(&#x27;usuarioActual&#x27;);
+    this.asegurarSeeds();
   }
 
   get f() {
-    return this.formPassword.controls;
+    return this.formLogin.controls;
   }
+/**
+ * Asegura que existan cuentas de ejemplo en localStorage.
+ *
+ * Si no están creados los usuarios demo &quot;admin@pixelhoshi.com&quot; y &quot;user@pixelhoshi.com&quot;,
+ * los agrega al arreglo de usuarios en localStorage.
+ */
+  private asegurarSeeds(): void {
+    let usuarios: Usuario[] &#x3D; [];
 
-  private cargarUsuarios(): Usuario[] {
+    try {
+      const raw &#x3D; localStorage.getItem(&#x27;usuarios&#x27;);
+      usuarios &#x3D; raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(usuarios)) usuarios &#x3D; [];
+    } catch {
+      usuarios &#x3D; [];
+    }
+
+    const seeds: Usuario[] &#x3D; [
+      { email: &#x27;admin@pixelhoshi.com&#x27;, password: &#x27;Admin*123&#x27;, rol: &#x27;admin&#x27; },
+      { email: &#x27;user@pixelhoshi.com&#x27;, password: &#x27;User*1234&#x27;, rol: &#x27;usuario&#x27; },
+    ];
+
+    let cambio &#x3D; false;
+    seeds.forEach((s) &#x3D;&gt; {
+      if (!usuarios.some((u) &#x3D;&gt; u.email.toLowerCase() &#x3D;&#x3D;&#x3D; s.email.toLowerCase())) {
+        usuarios.push(s);
+        cambio &#x3D; true;
+      }
+    });
+
+    if (cambio) {
+      localStorage.setItem(&#x27;usuarios&#x27;, JSON.stringify(usuarios));
+    }
+  }
+/**
+ * Maneja el envío del formulario de inicio de sesión.
+ *
+ * - Valida el formulario.
+ * - Busca el usuario en localStorage.
+ * - Si las credenciales son correctas, guarda email y rol en localStorage y redirige al catálogo.
+ * - Si son incorrectas, muestra un mensaje de error.
+ */
+  onSubmit(): void {
+    if (this.formLogin.invalid) {
+      this.formLogin.markAllAsTouched();
+      return;
+    }
+
+    const { email, password } &#x3D; this.formLogin.value as {
+      email: string;
+      password: string;
+    };
+
     let usuarios: Usuario[] &#x3D; [];
     try {
       const raw &#x3D; localStorage.getItem(&#x27;usuarios&#x27;);
@@ -357,61 +404,19 @@ export class PerfilComponent implements OnInit {
     } catch {
       usuarios &#x3D; [];
     }
-    return usuarios;
-  }
-/**
- * Actualiza la contraseña del usuario actual.
- *
- * - Valida el formulario de nueva contraseña.
- * - Busca el usuario en localStorage y reemplaza su password.
- * - Muestra un mensaje de éxito.
- * - Cierra la sesión y redirige a la pantalla de login
- *   para que el usuario vuelva a entrar con la nueva clave.
- */
-  guardar(): void {
-    this.mensaje &#x3D; &#x27;&#x27;;
-    this.mensajeTipo &#x3D; &#x27;&#x27;;
 
-    if (this.formPassword.invalid) {
-      this.formPassword.markAllAsTouched();
-      return;
-    }
-
-    if (!this.usuarioActual) {
-      this.mensaje &#x3D; &#x27;No hay sesión activa.&#x27;;
-      this.mensajeTipo &#x3D; &#x27;danger&#x27;;
-      return;
-    }
-
-    const nuevaPassword &#x3D; this.formPassword.value.nuevaPassword as string;
-
-    const usuarios &#x3D; this.cargarUsuarios();
-
-    const idx &#x3D; usuarios.findIndex(
-      (u) &#x3D;&gt; u.email.toLowerCase() &#x3D;&#x3D;&#x3D; this.usuarioActual!.toLowerCase()
+    const u &#x3D; usuarios.find(
+      (x) &#x3D;&gt; x.email.toLowerCase() &#x3D;&#x3D;&#x3D; email.toLowerCase()
     );
 
-    if (idx &#x3D;&#x3D;&#x3D; -1) {
-      this.mensaje &#x3D; &#x27;No se encontró el usuario en el sistema.&#x27;;
-      this.mensajeTipo &#x3D; &#x27;danger&#x27;;
-      return;
+    if (u &amp;&amp; u.password &#x3D;&#x3D;&#x3D; password) {
+      localStorage.setItem(&#x27;usuarioActual&#x27;, u.email);
+      localStorage.setItem(&#x27;rolActual&#x27;, u.rol);
+      alert(&#x27;Ingreso correcto&#x27;);
+      this.router.navigate([&#x27;/catalogo&#x27;]);
+    } else {
+      alert(&#x27;Credenciales incorrectas&#x27;);
     }
-
-    // Actualizar contraseña
-    usuarios[idx] &#x3D; { ...usuarios[idx], password: nuevaPassword };
-    localStorage.setItem(&#x27;usuarios&#x27;, JSON.stringify(usuarios));
-
-    // se fuerza a que el usuario vuelva a iniciar sesion
-    localStorage.removeItem(&#x27;usuarioActual&#x27;);
-    localStorage.removeItem(&#x27;rolActual&#x27;);
-
-    this.mensaje &#x3D;
-      &#x27;Contraseña actualizada correctamente. Debes volver a iniciar sesión.&#x27;;
-    this.mensajeTipo &#x3D; &#x27;success&#x27;;
-
-    setTimeout(() &#x3D;&gt; {
-      this.router.navigate([&#x27;/login&#x27;]);
-    }, 1500);
   }
 }
 </code></pre>

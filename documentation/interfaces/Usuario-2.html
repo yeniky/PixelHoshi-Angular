@@ -140,17 +140,10 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/pages/registro/registro.component.ts</code>
+            <code>src/app/pages/recuperar-clave/recuperar-clave.component.ts</code>
         </p>
 
 
-            <p class="comment">
-                <h3>Description</h3>
-            </p>
-            <p class="comment">
-                <p>Datos necesarios para registrar un nuevo usuario en PixelHoshi.</p>
-
-            </p>
 
 
         <section data-compodoc="block-index">
@@ -301,17 +294,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonModule } from &#x27;@angular/common&#x27;;
 import { Component } from &#x27;@angular/core&#x27;;
 import {
-  AbstractControl,
   FormBuilder,
   FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
   Validators,
+  ReactiveFormsModule,
 } from &#x27;@angular/forms&#x27;;
-import { Router, RouterModule } from &#x27;@angular/router&#x27;;
-/**
- * Datos necesarios para registrar un nuevo usuario en PixelHoshi.
- */
+
 interface Usuario {
   email: string;
   password: string;
@@ -319,54 +307,44 @@ interface Usuario {
 }
 
 @Component({
-  selector: &#x27;app-registro&#x27;,
+  selector: &#x27;app-recuperar-clave&#x27;,
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  templateUrl: &#x27;./registro.component.html&#x27;,
-  styleUrl: &#x27;./registro.component.css&#x27;,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: &#x27;./recuperar-clave.component.html&#x27;,
+  styleUrl: &#x27;./recuperar-clave.component.css&#x27;,
 })
-export class RegistroComponent {
-  formRegistro: FormGroup;
-  mensaje &#x3D; &#x27;&#x27;;
-  mensajeTipo: &#x27;success&#x27; | &#x27;danger&#x27; | &#x27;&#x27; &#x3D; &#x27;&#x27;;
+export class RecuperarClaveComponent {
+  formRecuperar: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.formRegistro &#x3D; this.fb.group(
-      {
-        email: [&#x27;&#x27;, [Validators.required, Validators.email]],
-        password: [
-          &#x27;&#x27;,
-          [
-            Validators.required,
-            Validators.minLength(8),
-            //** 1 mayúscula, 1 número, 1 símbolo
-            Validators.pattern(/^(?&#x3D;.*[A-Z])(?&#x3D;.*\d)(?&#x3D;.*[^\w\s]).+$/),
-          ],
-        ],
-        repetirPassword: [&#x27;&#x27;, [Validators.required]],
-      },
-      {
-        validators: [this.passwordsIgualesValidator],
-      }
-    );
+  mensaje: string | null &#x3D; null;
+  tipoMensaje: &#x27;success&#x27; | &#x27;danger&#x27; | null &#x3D; null;
+
+  constructor(private fb: FormBuilder) {
+    this.formRecuperar &#x3D; this.fb.group({
+      email: [&#x27;&#x27;, [Validators.required, Validators.email]],
+    });
   }
 
   get f() {
-    return this.formRegistro.controls;
+    return this.formRecuperar.controls;
   }
 
-  //** Validador para que password y repetirPassword coincidan
-  private passwordsIgualesValidator(
-    group: AbstractControl
-  ): ValidationErrors | null {
-    const pass &#x3D; group.get(&#x27;password&#x27;)?.value;
-    const rep &#x3D; group.get(&#x27;repetirPassword&#x27;)?.value;
+  /**
+ * Simula el envío de un enlace de recuperación de contraseña.
+ *
+ * - Valida que el email tenga formato correcto.
+ * - Muestra un mensaje informando que se envió el correo.
+ * - No manda correos reales, solo actualiza la vista para efectos de demo.
+ */
+  onSubmit(): void {
+    if (this.formRecuperar.invalid) {
+      this.formRecuperar.markAllAsTouched();
+      return;
+    }
 
-    if (!pass || !rep) return null;
-    return pass &#x3D;&#x3D;&#x3D; rep ? null : { noCoincide: true };
-  }
+    const email &#x3D; (this.formRecuperar.value.email as string).toLowerCase();
 
-  private cargarUsuarios(): Usuario[] {
+    // Lee los usuarios desde localStorage
     let usuarios: Usuario[] &#x3D; [];
     try {
       const raw &#x3D; localStorage.getItem(&#x27;usuarios&#x27;);
@@ -375,64 +353,20 @@ export class RegistroComponent {
     } catch {
       usuarios &#x3D; [];
     }
-    return usuarios;
-  }
 
-  private guardarUsuarios(usuarios: Usuario[]) {
-    localStorage.setItem(&#x27;usuarios&#x27;, JSON.stringify(usuarios));
-  }
-/**
- * Maneja el envío del formulario de registro.
- *
- * - Valida el formulario y que las contraseñas coincidan.
- * - Verifica que el email no exista ya en localStorage.
- * - Guarda el nuevo usuario en localStorage con rol &quot;usuario&quot;.
- * - Redirige al login y muestra un mensaje de confirmación.
- */
-  onSubmit(): void {
-    this.mensaje &#x3D; &#x27;&#x27;;
-    this.mensajeTipo &#x3D; &#x27;&#x27;;
+    const existe &#x3D; usuarios.some(
+      (u) &#x3D;&gt; u.email.toLowerCase() &#x3D;&#x3D;&#x3D; email
+    );
 
-    if (this.formRegistro.invalid) {
-      this.formRegistro.markAllAsTouched();
-      return;
+    if (existe) {
+      // Aquí si estuviera conectada a una base de datos se enviaría un correo.
+      this.mensaje &#x3D; &#x27;Se ha enviado un enlace para recuperar la contraseña, favor de revisar su correo.&#x27;;
+      this.tipoMensaje &#x3D; &#x27;success&#x27;;
+    } else {
+      // busca si existe el usuario y en caso de que no, arroja el mensaje
+      this.mensaje &#x3D; &#x27;No existe un usuario registrado con ese correo.&#x27;;
+      this.tipoMensaje &#x3D; &#x27;danger&#x27;;
     }
-
-    const { email, password } &#x3D; this.formRegistro.value as {
-      email: string;
-      password: string;
-    };
-
-    const usuarios &#x3D; this.cargarUsuarios();
-
-    // **Verificar si ya existe un usuario con ese correo
-    if (
-      usuarios.some(
-        (u) &#x3D;&gt; u.email.toLowerCase() &#x3D;&#x3D;&#x3D; email.trim().toLowerCase()
-      )
-    ) {
-      this.mensaje &#x3D; &#x27;Ya existe una cuenta con ese correo.&#x27;;
-      this.mensajeTipo &#x3D; &#x27;danger&#x27;;
-      return;
-    }
-
-    // **Crear nuevo usuario con rol &quot;usuario&quot;
-    const nuevo: Usuario &#x3D; {
-      email: email.trim(),
-      password,
-      rol: &#x27;usuario&#x27;,
-    };
-
-    usuarios.push(nuevo);
-    this.guardarUsuarios(usuarios);
-
-    this.mensaje &#x3D; &#x27;Cuenta creada correctamente. Ahora puedes iniciar sesión.&#x27;;
-    this.mensajeTipo &#x3D; &#x27;success&#x27;;
-
-    // **Opcional: redirigir al login después de un momento
-    setTimeout(() &#x3D;&gt; {
-      this.router.navigate([&#x27;/login&#x27;]);
-    }, 1500);
   }
 }
 </code></pre>
